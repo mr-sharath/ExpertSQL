@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Query-to-SQL Translator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>AI-Powered Query-to-SQL Translator</h1>
+        
+        <div class="query-section">
+            <h2>Enter your question in natural language:</h2>
+            <textarea 
+                id="query-input" 
+                placeholder="E.g., Show me the top 3 customers by total spending"
+                rows="4"
+            ></textarea>
+            <button id="submit-btn">Convert to SQL & Execute</button>
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">Processing your query</div>
+        
+        <div id="error-message" class="error" style="display: none;"></div>
+        
+        <div class="results-section">
+            <div class="sql-section">
+                <h3>Generated SQL Query</h3>
+                <pre id="sql-output">Your SQL query will appear here...</pre>
+            </div>
+            
+            <div class="results-table">
+                <h3>Query Results</h3>
+                <div id="results-container">
+                    <p>Results will appear here...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const queryInput = document.getElementById('query-input');
+            const submitBtn = document.getElementById('submit-btn');
+            const sqlOutput = document.getElementById('sql-output');
+            const resultsContainer = document.getElementById('results-container');
+            const loadingElement = document.getElementById('loading');
+            const errorElement = document.getElementById('error-message');
+
+            // Handle form submission
+            submitBtn.addEventListener('click', processQuery);
+            
+            // Allow Ctrl+Enter to submit
+            queryInput.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    processQuery();
+                }
+            });
+
+            async function processQuery() {
+                const query = queryInput.value.trim();
+                
+                if (!query) {
+                    showError('Please enter a question');
+                    return;
+                }
+                
+                // Show loading state
+                loadingElement.style.display = 'block';
+                errorElement.style.display = 'none';
+                submitBtn.disabled = true;
+                
+                try {
+                    const response = await fetch('/query', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ query })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(data.error || 'An error occurred');
+                    }
+                    
+                    // Display the SQL query
+                    sqlOutput.textContent = data.sql;
+                    
+                    // Display the results
+                    displayResults(data.results);
+                    
+                } catch (error) {
+                    showError(error.message || 'An error occurred while processing your query');
+                } finally {
+                    loadingElement.style.display = 'none';
+                    submitBtn.disabled = false;
+                }
+            }
+            
+            function displayResults(results) {
+                if (!results || results.length === 0) {
+                    resultsContainer.innerHTML = '<p>No results found.</p>';
+                    return;
+                }
+                
+                // Get all unique keys from the results
+                const headers = Object.keys(results[0]);
+                
+                // Create table
+                let table = '<table><thead><tr>';
+                
+                // Add headers
+                headers.forEach(header => {
+                    table += `<th>${header.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</th>`;
+                });
+                
+                table += '</tr></thead><tbody>';
+                
+                // Add rows
+                results.forEach(row => {
+                    table += '<tr>';
+                    headers.forEach(header => {
+                        let value = row[header];
+                        // Format dates if needed
+                        if (value && typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}/)) {
+                            value = new Date(value).toLocaleString();
+                        }
+                        table += `<td>${value !== null && value !== undefined ? value : 'NULL'}</td>`;
+                    });
+                    table += '</tr>';
+                });
+                
+                table += '</tbody></table>';
+                resultsContainer.innerHTML = table;
+            }
+            
+            function showError(message) {
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

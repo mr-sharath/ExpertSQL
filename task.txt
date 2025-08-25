@@ -1,0 +1,37 @@
+ 
+Task: AI-Powered Query-to-SQL Translator with Schema Awareness
+Requirements
+Database Setup (Mock / SQLite)
+GenAI Query-to-SQL Conversion
+Structured Output
+Frontend (Minimal)
+Bonus (if time permits)
+Example
+ 
+Input:
+“Which product has the highest total sales?”
+Add error handling: if the SQL is invalid or unsafe, return a meaningful error.
+Show the generated SQL query alongside the results for transparency.
+A React (or plain HTML/JS) page with:
+A text input box for the natural language query.
+A results panel that displays the returned JSON in a formatted table.
+Return the query results in JSON format.
+Implement a backend endpoint (/query) that takes a natural language question (e.g., “Show me the top 3 customers by order amount in July”) and:
+Calls a GenAI model (e.g., OpenAI API or a local LLM) to convert it into a SQL query.
+Validates that the generated SQL only uses tables/columns from the schema.
+Executes the SQL against the SQLite DB.
+Create a SQLite database with at least 3 tables (e.g., Customers, Orders, Products) and a few rows of sample data.
+ 
+Generated SQL:
+SELECT p.name, SUM(o.quantity * p.price) as total_sales
+FROM Orders o
+JOIN Products p ON o.product_id = p.id
+GROUP BY p.name
+ORDER BY total_sales DESC
+LIMIT 1;
+ 
+Output JSON:
+[
+  { "product": "Laptop", "total_sales": 12500 }
+]
+ 
