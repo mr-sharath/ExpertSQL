@@ -126,6 +126,37 @@ tr:hover {
     animation: dots 1.5s steps(5, end) infinite;
 }
 
+.summary-section {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    border-left: 4px solid #4a90e2;
+}
+
+.summary-section h3 {
+    margin-top: 0;
+    color: #2c3e50;
+    font-size: 1.2rem;
+}
+
+.summary-text {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #333;
+    margin: 0.5rem 0 0;
+}
+
+@media (max-width: 768px) {
+    .summary-section {
+        padding: 1rem;
+    }
+    
+    .summary-text {
+        font-size: 0.95rem;
+    }
+}
+
 @keyframes dots {
     0%, 20% { content: '.'; }
     40% { content: '..'; }

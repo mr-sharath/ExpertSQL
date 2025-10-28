@@ -21,7 +21,7 @@ Calls a GenAI model (e.g., OpenAI API or a local LLM) to convert it into a SQL q
 Validates that the generated SQL only uses tables/columns from the schema.
 Executes the SQL against the SQLite DB.
 Create a SQLite database with at least 3 tables (e.g., Customers, Orders, Products) and a few rows of sample data.
- 
+   
 Generated SQL:
 SELECT p.name, SUM(o.quantity * p.price) as total_sales
 FROM Orders o

@@ -25,6 +25,11 @@
         <div id="error-message" class="error" style="display: none;"></div>
         
         <div class="results-section">
+            <div class="summary-section" id="summary-section" style="display: none;">
+                <h3>Summary</h3>
+                <p class="summary-text" id="summary-text"></p>
+            </div>
+            
             <div class="sql-section">
                 <h3>Generated SQL Query</h3>
                 <pre id="sql-output">Your SQL query will appear here...</pre>
@@ -89,6 +94,17 @@
                     // Display the SQL query
                     sqlOutput.textContent = data.sql;
                     
+                    // Display the summary if available
+                    const summarySection = document.getElementById('summary-section');
+                    const summaryText = document.getElementById('summary-text');
+                    
+                    if (data.summary) {
+                        summaryText.textContent = data.summary;
+                        summarySection.style.display = 'block';
+                    } else {
+                        summarySection.style.display = 'none';
+                    }
+                    
                     // Display the results
                     displayResults(data.results);
                     
@@ -140,6 +156,8 @@
             function showError(message) {
                 errorElement.textContent = message;
                 errorElement.style.display = 'block';
+                // Hide summary on error
+                document.getElementById('summary-section').style.display = 'none';
             }
         });
     </script>
